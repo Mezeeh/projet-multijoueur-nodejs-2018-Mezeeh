@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8">
+	<title>Budget Hockey League</title>
+	<style>
+		canvas {
+			cursor: none;
+			padding: 0;
+			display: block;
+			width: 1280px;
+			height: 720px;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 990;
+		}
+
+		body {
+			background-image: url("decoration/illustration/arriere-plan-accueil.jpg");
+			background-repeat: contain;
+			/* background-color: blueviolet; */
+		}
+
+		#hudBalles {
+			font-size: 32px;
+			color: darkred;
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: 100px;
+			height: 32px;
+			position:absolute;
+			bottom: 0;
+			right: 40%;
+			z-index: 999;
+		}
+
+		#hudPointsJ1 {
+			font-size: 32px;
+			color:darkred;
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: auto;
+			height: 32px;
+			position:absolute;
+			top: 35px;
+			left: 0;
+			z-index: 999;
+		}
+
+		#hudPointsJ2 {
+			font-size: 32px;
+			color:darkred;
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: auto;
+			height: 32px;
+			position:absolute;
+			top: 35px;
+			right: 0;
+			z-index: 999;
+		}
+
+		#hudNomJ1 {
+			font-size: 32px;
+			color:darkred;
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: auto;
+			height: 32px;
+			position:absolute;
+			top: 0;
+			left: 0;
+			z-index: 999;
+		}
+
+		#hudNomJ2 {
+			font-size: 32px;
+			color:darkred;
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: auto;
+			height: 32px;
+			position:absolute;
+			top: 0;
+			right: 0;
+			z-index: 999;
+		}
+
+		#espace-jeu{
+			padding: 0;
+			margin: auto;
+			display: block;
+			width: 1280px;
+			height: 720px;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 990;
+		}
+
+		#section-accueil, #section-fin{
+			margin: auto;
+    		width: 20%;
+			color : orange;
+			font-size: 2em;
+			text-align: center;
+		}
+
+		#section-accueil a, #section-fin a{
+			color : white;
+			text-decoration: none;
+		}
+
+		
+		#section-accueil a:hover, #section-fin a:hover{
+			text-decoration: underline;
+		}
+
+		#section-attente{
+			background-color: blueviolet;
+			display: block;
+			width: 50%;
+			margin: 0 auto;
+			margin-top: 340px;
+			font-size: 40px;
+			text-align: center;
+		}
+
+		h1{
+			font-size: 3em;
+			color: rgb(0, 0, 0);
+		}
+
+		h2{
+			font-size: 2em;
+			color: #ffffff;
+		}
+	</style>
+</head>
+
+<body>
+	<script type="text/plain" id="page-accueil">
+		<header>
+			<h1>BHL</h1>
+			<h2>Prouve-toi !</h2>
+		</header>
+	
+		<section id="section-accueil">
+			<p>Veuillez inscrire votre nom puis cliquer sur jouer !</p>
+			<!-- En utilisant post on ne touche pas à l'URL-->
+			<form id="form-accueil" method="post">
+				<div>
+					<label for="nom">Votre nom de joueur</label>
+					<input type="text" id="nom" name="nom" >
+				</div>
+	
+				<!-- La navigation se fait par l'ajout de #jeu à l'URL
+						Il n'y a pas de rechargement de la page car c'est une technique de navigation
+						HTML dans une même page. -->
+				<a id="bouton-jouer" href="#attente">Jouer</a>
+			</form>
+		</section>
+	
+	</script>
+
+	<script type="text/plain" id="page-attente">
+		<header>
+			<h1>BHL</h1>
+			<h2>Prouve-toi !</h2>
+		</header>
+
+		<section id="section-attente">
+			<div>
+				En attente du second joueur...
+			</div>
+			<div>
+				<a href="#accueil">Accueil</a>
+			</div>
+		</section>
+	</script>
+
+	<script type="text/plain" id="page-jeu">
+		<section id="espace-jeu">
+			<canvas id="dessin" width="1280" height="720"></canvas>
+			<div id="hudBalles">Toto</div>
+			<div id="hudPointsJ1">Points Joueur 1</div>
+			<div id="hudPointsJ2">Points Joueur 2</div>
+			<div id="hudNomJ1">Nom joueur 1</div>
+			<div id="hudNomJ2">Nom joueur 2</div>
+		</section>
+	</script>
+
+	<script type="text/plain" id="page-fin">
+		<header>
+			<h1>BHL</h1>
+			<h2>Prouve-toi !</h2>
+		</header>
+
+		<section id="section-fin">
+			<div id="resultat">
+				<!-- {_NOM_} et {_MESSAGE_} sont des chaines à remplacer par programmation -->
+				<p>{NOM}</p>
+				<p>{POINTS}</p>
+				<p class="message">{MESSAGE}</p>
+			</div>
+			<a href="#accueil">Accueil</a>
+		</section>
+	</script>
+
+	<script type="text/javascript" src="modele/Joueur.js"></script>
+
+	<script type="text/javascript" src="vue/AccueilVue.js"></script>
+	<script type="text/javascript" src="vue/FinVue.js"></script>
+	<script type="text/javascript" src="vue/JeuVue.js"></script>
+	<script type="text/javascript" src="vue/AttenteVue.js"></script>
+
+	<script type="text/javascript" src="BHL.js"></script>
+</body>
+</html>
