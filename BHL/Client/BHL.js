@@ -19,6 +19,10 @@
 
         accueilVue.afficher();
     }
+	
+	function initialiserJeu(){
+		connexion = new ConnexionNodeJS();
+	}
 
     function interpreterEvenementsLocation(evenement){
 		//hash est la partie suivant le # dans l'url
@@ -34,6 +38,7 @@
 		}
 		else if(intructionNavigation.match(/^#jeu$/)){
 			jeuVue.afficher();
+			initialiserJeu();
 			vueActive = jeuVue;
 		}
 		else if(intructionNavigation.match(/^#gagnant$/)){
