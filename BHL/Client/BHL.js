@@ -21,7 +21,11 @@
     }
 	
 	function initialiserJeu(){
-		connexion = new ConnexionNodeJS();
+		connexion = new ConnexionNodeJS(demanderNomJoueur);
+	}
+	
+	function demanderNomJoueur(){
+		return joueur.nom;
 	}
 
     function interpreterEvenementsLocation(evenement){

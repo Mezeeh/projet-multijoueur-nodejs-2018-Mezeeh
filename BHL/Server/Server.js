@@ -2,6 +2,7 @@ var http = require('http');
 var io = require('socket.io');
 
 var nbJoueurs;
+var listeConnexion = [];
 
 function init(){
     nbJoueurs = 0;
@@ -16,7 +17,21 @@ function init(){
 
 function gererConnexion(connexion){
     nbJoueurs++;
-    if(nbJoueurs >= 2) console.log("DEUX PERSONNES !!!");
+	
+	listeConnexion[nbJoueurs] = connexion;
+
+    if(nbJoueurs == 2){
+		console.log("DEUX PERSONNES !!!");
+		
+		for(idConnexion in listeConnexion){
+			listeConnexion[idConnexion].emit('demandeNomsJoueurs', true);
+			listeConnexion[idConnexion].on('nomsJoueurs', gererNomsJoueurs);
+		}
+	} 
+}
+
+function gererNomsJoueurs(nom){
+	console.log("Nom = " + nom);
 }
 
 init();
