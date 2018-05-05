@@ -1,6 +1,7 @@
 var http = require('http');
 var io = require('socket.io');
 Joueur = require('./modele/Joueur.js');
+Roles = require('./modele/Roles.js');
 
 var nbJoueurs;
 var listeConnexion = [];
@@ -44,6 +45,17 @@ function gererJoueurs(joueur) {
 	participant = JSON.parse(joueur);
 	listeJoueurs[participant.id] = new Joueur(participant.nom, participant.id);
 	//console.log(listeJoueurs[participant.id]);
+	choisirRoleJoueur(participant.id);
+	console.log(listeJoueurs[participant.id].getRole());
+}
+
+function choisirRoleJoueur(idJoueur){
+	if(0 == idJoueur){
+		choix = Math.round(Math.random());
+		listeJoueurs[participant.id].setRole(0 == choix ? Roles.ATTAQUANT : Roles.DEFENSEUR);
+	} else {
+		listeJoueurs[participant.id].setRole(Roles.ATTAQUANT == listeJoueurs[0].getRole() ? Roles.DEFENSEUR : Roles.ATTAQUANT);
+	}
 }
 
 init();
