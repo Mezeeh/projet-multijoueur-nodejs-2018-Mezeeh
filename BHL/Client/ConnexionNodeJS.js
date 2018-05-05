@@ -1,15 +1,23 @@
-function ConnexionNodeJS(callback){
+function ConnexionNodeJS(demanderJoueur,
+						commencerPartie){
     var connexion;
 
     function init(){
         console.log("HELLO");
         connexion = io.connect('http://127.0.0.1:8080');
-		connexion.on('demandeNomsJoueurs', envoyerNomJoueur);
-    }
+		connexion.on('identificationJoueur', identifierJoueur);
+		connexion.on('demandeJoueurs', envoyerJoueur);
+		connexion.on('commencerPartie', commencerPartie);
+	}
 	
-	function envoyerNomJoueur(evenement){
-		console.log("envoyerNomJoueur()");
-		connexion.emit('nomsJoueurs', callback());
+	function identifierJoueur(idJoueur){
+		console.log("identifierJoueur()");
+		demanderJoueur().id = idJoueur;
+	}
+	
+	function envoyerJoueur(evenement){
+		console.log("envoyerJoueur()");
+		connexion.emit('joueurs', JSON.stringify(demanderJoueur()));
 	}
 
     init();

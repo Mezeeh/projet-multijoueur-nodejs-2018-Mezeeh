@@ -20,12 +20,21 @@
         accueilVue.afficher();
     }
 	
+	function initialiserConnexion(){
+		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie);
+	}
+
 	function initialiserJeu(){
-		connexion = new ConnexionNodeJS(demanderNomJoueur);
+
 	}
 	
-	function demanderNomJoueur(){
-		return joueur.nom;
+	function demanderJoueur(){
+		return joueur;
+	}
+
+	function commencerPartie(evenement){
+		console.log("La partie va commencer");
+		window.location = "#jeu";
 	}
 
     function interpreterEvenementsLocation(evenement){
@@ -37,7 +46,8 @@
 		}
 		else if(intructionNavigation.match(/^#attente$/)){
             console.log("En attente du second joueur...");
-            attenteVue.afficher();
+			attenteVue.afficher();
+			initialiserConnexion();
             vueActive = attenteVue;
 		}
 		else if(intructionNavigation.match(/^#jeu$/)){
