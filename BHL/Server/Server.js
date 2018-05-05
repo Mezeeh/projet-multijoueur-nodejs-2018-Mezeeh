@@ -7,8 +7,12 @@ var nbJoueurs;
 var listeConnexion = [];
 var listeJoueurs = [];
 
+var joueursRecus;
+
 function init() {
 	nbJoueurs = 0;
+
+	joueursRecus = 0;
 
 	var server = http.createServer(function (requete, reponse) {
 
@@ -34,27 +38,34 @@ function gererConnexion(connexion) {
 		for (idConnexion in listeConnexion) {
 			listeConnexion[idConnexion].emit('demandeJoueurs', true);
 			listeConnexion[idConnexion].on('joueurs', gererJoueurs);
-			listeConnexion[idConnexion].emit('commencerPartie', true);
 		}
 	}
 }
 
 function gererJoueurs(joueur) {
-	//console.log("Nom = " + nom);
-	//console.log(joueur);
+	joueursRecus++;
+
 	participant = JSON.parse(joueur);
+	console.log(participant.id);
 	listeJoueurs[participant.id] = new Joueur(participant.nom, participant.id);
 	//console.log(listeJoueurs[participant.id]);
-	choisirRoleJoueur(participant.id);
-	console.log(listeJoueurs[participant.id].getRole());
+
+	if (2 == joueursRecus) {
+		for (idConnexion in listeConnexion) {
+			choisirRoleJoueur(idConnexion);
+			console.log(listeJoueurs[idConnexion].getRole());
+			console.log(JSON.stringify(listeJoueurs[idConnexion]));
+			listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs[idConnexion]));
+		}
+	}
 }
 
-function choisirRoleJoueur(idJoueur){
-	if(0 == idJoueur){
+function choisirRoleJoueur(idJoueur) {
+	if (0 == idJoueur) {
 		choix = Math.round(Math.random());
-		listeJoueurs[participant.id].setRole(0 == choix ? Roles.ATTAQUANT : Roles.DEFENSEUR);
+		listeJoueurs[idJoueur].setRole(0 == choix ? Roles.ATTAQUANT : Roles.DEFENSEUR);
 	} else {
-		listeJoueurs[participant.id].setRole(Roles.ATTAQUANT == listeJoueurs[0].getRole() ? Roles.DEFENSEUR : Roles.ATTAQUANT);
+		listeJoueurs[idJoueur].setRole(Roles.ATTAQUANT == listeJoueurs[0].getRole() ? Roles.DEFENSEUR : Roles.ATTAQUANT);
 	}
 }
 
