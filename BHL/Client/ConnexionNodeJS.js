@@ -20,5 +20,9 @@ function ConnexionNodeJS(demanderJoueur,
 		connexion.emit('joueurs', JSON.stringify(demanderJoueur()));
 	}
 
+	this.envoyerDeplacement = function(direction){
+		connexion.emit('deplacement', JSON.stringify(direction));
+	}
+
     init();
 }

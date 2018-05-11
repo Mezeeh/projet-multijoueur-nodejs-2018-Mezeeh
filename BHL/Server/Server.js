@@ -58,6 +58,13 @@ function gererJoueurs(joueur) {
 			listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs[idConnexion]));
 		}
 	}
+
+	listeConnexion[participant.id].on('deplacement', gererDeplacement);
+}
+
+function gererDeplacement(etat){
+	var direction = JSON.parse(etat);
+	console.log(etat + " " + Date.now());
 }
 
 function choisirRoleJoueur(idJoueur) {
