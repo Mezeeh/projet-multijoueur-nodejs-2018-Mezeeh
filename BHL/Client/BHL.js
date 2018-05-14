@@ -7,6 +7,7 @@
     var vueActive = null;
 
 	var joueur;
+	var infosJoueur;
 	
 	var touchesDeplacement = {
         haut: 87, // w
@@ -65,7 +66,9 @@
 		document.onkeydown = gererToucheAppuyer;
 		document.onkeyup = gererToucheRelacher;
 
+		joueur.setRole(infosJoueur.role);
 		joueur.creerRepresentation();
+		joueur.setPosition(infosJoueur.positionX, infosJoueur.positionY);
 		joueur.afficher();
 		
 		createjs.Ticker.setFPS(25);
@@ -82,7 +85,8 @@
 
 	function commencerPartie(evenement){
 		console.log("La partie va commencer");
-		joueur.setRole(JSON.parse(evenement).role);
+		infosJoueur = JSON.parse(evenement);
+		
 		window.location = "#jeu";
 	}
 

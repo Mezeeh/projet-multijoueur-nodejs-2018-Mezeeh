@@ -6,6 +6,14 @@ Joueur = function(nom, id)
 	var points = 0;
 	var role;
 
+	var positionDepart = {
+		x : 0,
+		y : 0
+	}
+
+	this.positionX;
+	this.positionY;
+
 	this.getRole = function(){
 		return this.role;
 	}

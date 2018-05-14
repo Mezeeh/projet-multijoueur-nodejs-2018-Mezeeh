@@ -10,14 +10,12 @@ Joueur = function()
 
 	this.creerRepresentation = function(){
 		representation = new createjs.Shape();
-		affichageSelonRole(this.role);
+		representation.graphics.beginFill("Defenseur" == this.role ? "red" : "blue").drawRect(0, 0, 30, 30);
 	}
 
-	function affichageSelonRole(role){
-		representation.graphics.beginFill("Defenseur" == role ? "blue" : "red").drawRect(0, 0, 30, 30);
-		representation.x = "Defenseur" == role ? /* this.scene.canvas.width */ 20 : /* this.scene.canvas.width */ 640;
-		representation.y = /* this.scene.canvas.height */ (720 / 2);
-		console.log(role);
+	this.setPosition = function(x, y){
+		representation.x = x;
+		representation.y = y;
 	}
 
 	this.changerRole = function(){
@@ -30,7 +28,6 @@ Joueur = function()
 
 	this.setRole = function(role){
 		this.role = role
-		console.log(this.nom + " " + this.role);
 	}
 
 	this.setScene = function(scene){

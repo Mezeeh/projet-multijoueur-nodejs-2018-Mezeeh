@@ -23,9 +23,6 @@ function init() {
 function gererConnexion(connexion) {
 	listeConnexion[nbJoueurs] = connexion;
 
-	/* var joueur = new Joueur(nbJoueurs);
-	listeJoueurs[nbJoueurs] = joueur; */
-
 	connexion.emit('identificationJoueur', nbJoueurs);
 
 	nbJoueurs++;
@@ -44,14 +41,13 @@ function gererJoueurs(joueur) {
 	joueursRecus++;
 
 	participant = JSON.parse(joueur);
-	console.log(participant.id);
+	//console.log(participant.id);
 	listeJoueurs[participant.id] = new Joueur(participant.nom, participant.id);
 	//console.log(listeJoueurs[participant.id]);
 
 	if (2 == joueursRecus) {
 		for (idConnexion in listeConnexion) {
 			choisirRoleJoueur(idConnexion);
-			console.log(listeJoueurs[idConnexion].getRole());
 			console.log(JSON.stringify(listeJoueurs[idConnexion]));
 			listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs[idConnexion]));
 		}
@@ -69,9 +65,12 @@ function choisirRoleJoueur(idJoueur) {
 	if (0 == idJoueur) {
 		choix = Math.round(Math.random());
 		listeJoueurs[idJoueur].setRole(0 == choix ? Roles.ATTAQUANT : Roles.DEFENSEUR);
+		listeJoueurs[idJoueur].positionX = (1280 / 2);
 	} else {
 		listeJoueurs[idJoueur].setRole(Roles.ATTAQUANT == listeJoueurs[0].getRole() ? Roles.DEFENSEUR : Roles.ATTAQUANT);
+		listeJoueurs[idJoueur].positionX = (1280 / 40);
 	}
+	listeJoueurs[idJoueur].positionY = (720 / 2);
 }
 
 init();
