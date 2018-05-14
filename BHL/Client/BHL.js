@@ -35,10 +35,14 @@
 	};
 
 	var dernierEtat;
+
+	var dessin;
+	var scene;
     
     function initialiser(){
         window.addEventListener("hashchange", interpreterEvenementsLocation);
-        joueur = new Joueur();
+		
+		joueur = new Joueur();
         
 		accueilVue = new AccueilVue(joueur);
         attenteVue = new AttenteVue();
@@ -54,8 +58,22 @@
 
 	function initialiserJeu(){
 		console.log("initialiserJeu()");
+		dessin = document.getElementById("canvas");
+		scene = new createjs.Stage(dessin);
+		joueur.setScene(scene);
+
 		document.onkeydown = gererToucheAppuyer;
 		document.onkeyup = gererToucheRelacher;
+
+		joueur.creerRepresentation();
+		joueur.afficher();
+		
+		createjs.Ticker.setFPS(25);
+		createjs.Ticker.addEventListener("tick", rafraichirJeu);
+	}
+
+	function rafraichirJeu(evenement) {
+		scene.update(evenement);
 	}
 	
 	function demanderJoueur(){
@@ -64,6 +82,7 @@
 
 	function commencerPartie(evenement){
 		console.log("La partie va commencer");
+		joueur.setRole(JSON.parse(evenement).role);
 		window.location = "#jeu";
 	}
 
@@ -96,12 +115,6 @@
 				dernierEtat = etat;
 			}
 		}
-		
-		/* if(null == directionDeplacementActuel || directionDeplacementActuel != directionDeplacement){
-			directionDeplacementActuel = directionDeplacement;
-			//console.log(directionDeplacement);
-			connexion.envoyerDeplacement(directionDeplacement);
-		} */
 	}
 
 	function gererToucheRelacher(evenement){

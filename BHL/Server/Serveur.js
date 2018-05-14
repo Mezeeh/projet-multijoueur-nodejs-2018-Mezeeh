@@ -14,11 +14,9 @@ function init() {
 
 	joueursRecus = 0;
 
-	var server = http.createServer(function (requete, reponse) {
+	var serveur = http.createServer(function (requete, reponse) {}).listen(8080);
 
-	}).listen(8080);
-
-	var priseEntreeSortie = io.listen(server);
+	var priseEntreeSortie = io.listen(serveur);
 	priseEntreeSortie.on('connection', gererConnexion);
 }
 
@@ -64,7 +62,7 @@ function gererJoueurs(joueur) {
 
 function gererDeplacement(etat){
 	var direction = JSON.parse(etat);
-	console.log(etat + " " + Date.now());
+	console.log(direction + " " + Date.now());
 }
 
 function choisirRoleJoueur(idJoueur) {
