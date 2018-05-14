@@ -11,8 +11,18 @@ Joueur = function(nom, id)
 		y : 0
 	}
 
+	var etat;
+
 	this.positionX;
 	this.positionY;
+
+	this.getEtat = function(etat){
+		return this.etat;
+	}
+
+	this.setEtat = function(etat){
+		this.etat = etat;
+	}
 
 	this.getRole = function(){
 		return this.role;

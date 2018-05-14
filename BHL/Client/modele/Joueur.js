@@ -7,10 +7,53 @@ Joueur = function()
 
 	var scene;
 	var representation;
+	var etat = "INACTIF";
 
 	this.creerRepresentation = function(){
 		representation = new createjs.Shape();
 		representation.graphics.beginFill("Defenseur" == this.role ? "blue" : "red").drawRect(0, 0, 30, 30);
+	}
+
+	this.getEtat = function(){
+		return this.etat;
+	}
+
+	this.setEtat = function(etat){
+		this.etat = etat;
+	}
+
+	this.deplacer = function(etat, vitesse){
+		switch (etat) {
+			case "HAUT_GAUCHE":
+				representation.x -= vitesse;
+				representation.y -= vitesse;
+				break;
+			case "HAUT_DROITE":
+				representation.x += vitesse;
+				representation.y -= vitesse;
+				break;
+			case "BAS_GAUCHE":
+				representation.x -= vitesse;
+				representation.y += vitesse;
+				break;
+			case "BAS_DROITE":
+				representation.x += vitesse;
+				representation.y += vitesse;
+				break;
+			case "HAUT":
+				representation.y -= vitesse;
+				console.log(representation.y);
+				break;
+			case "BAS":
+				representation.y += vitesse;
+				break;
+			case "GAUCHE":
+				representation.x -= vitesse;
+				break;
+			case "DROITE":
+				representation.x += vitesse;
+				break;
+		}
 	}
 
 	this.setPosition = function(x, y){

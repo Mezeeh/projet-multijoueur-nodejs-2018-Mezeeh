@@ -1,5 +1,6 @@
 function ConnexionNodeJS(demanderJoueur,
-						commencerPartie){
+						commencerPartie,
+						gererEtatJoueurs){
     var connexion;
 
     function init(){
@@ -8,6 +9,7 @@ function ConnexionNodeJS(demanderJoueur,
 		connexion.on('identificationJoueur', identifierJoueur);
 		connexion.on('demandeJoueurs', envoyerJoueur);
 		connexion.on('commencerPartie', commencerPartie);
+		connexion.on('etatJoueurs', gererEtatJoueurs);
 	}
 	
 	function identifierJoueur(idJoueur){
