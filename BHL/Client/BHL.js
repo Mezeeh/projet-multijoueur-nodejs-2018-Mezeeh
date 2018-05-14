@@ -7,7 +7,9 @@
     var vueActive = null;
 
 	var joueur;
-	var infosJoueur;
+	var infosJoueurs = [];
+
+	var adversaire;
 	
 	var touchesDeplacement = {
         haut: 87, // w
@@ -66,10 +68,27 @@
 		document.onkeydown = gererToucheAppuyer;
 		document.onkeyup = gererToucheRelacher;
 
-		joueur.setRole(infosJoueur.role);
-		joueur.creerRepresentation();
-		joueur.setPosition(infosJoueur.positionX, infosJoueur.positionY);
-		joueur.afficher();
+		for(info in infosJoueurs){
+			if(infosJoueurs[info].id == joueur.id){
+				console.log("joueur : " + infosJoueurs[info].nom + " " + infosJoueurs[info].role + " " + infosJoueurs[info].positionX + " " + infosJoueurs[info].positionY);
+				joueur.setRole(infosJoueurs[info].role);
+				joueur.creerRepresentation();
+				joueur.setPosition(infosJoueurs[info].positionX, infosJoueurs[info].positionY);
+				joueur.afficher();
+			} 
+			
+			if(infosJoueurs[info].id != joueur.id) {
+				console.log("adversaire : " + infosJoueurs[info].nom + " " + infosJoueurs[info].role + " " + infosJoueurs[info].positionX + " " + infosJoueurs[info].positionY);
+				adversaire = new Joueur();
+				adversaire.setScene(scene);
+				adversaire.id = infosJoueurs[info].id;
+				adversaire.nom = infosJoueurs[info].nom;
+				adversaire.setRole(infosJoueurs[info].role);
+				adversaire.creerRepresentation();
+				adversaire.setPosition(infosJoueurs[info].positionX, infosJoueurs[info].positionY);
+				adversaire.afficher();
+			}
+		}
 		
 		createjs.Ticker.setFPS(25);
 		createjs.Ticker.addEventListener("tick", rafraichirJeu);
@@ -85,7 +104,7 @@
 
 	function commencerPartie(evenement){
 		console.log("La partie va commencer");
-		infosJoueur = JSON.parse(evenement);
+		infosJoueurs = JSON.parse(evenement);
 		
 		window.location = "#jeu";
 	}

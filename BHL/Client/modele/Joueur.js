@@ -10,7 +10,7 @@ Joueur = function()
 
 	this.creerRepresentation = function(){
 		representation = new createjs.Shape();
-		representation.graphics.beginFill("Defenseur" == this.role ? "red" : "blue").drawRect(0, 0, 30, 30);
+		representation.graphics.beginFill("Defenseur" == this.role ? "blue" : "red").drawRect(0, 0, 30, 30);
 	}
 
 	this.setPosition = function(x, y){
