@@ -2,12 +2,19 @@ Joueur = function()
 {
 	this.nom;
 	this.id;
+	this.points = 0;
 	
 	var role;
 
 	var scene;
 	var representation;
 	var etat = "INACTIF";
+
+	this.representationRectangle = function () {
+		representation.setBounds(representation.x, representation.y, 30, 30); // sert a creer une hitbox
+        
+        return representation.getBounds();
+	}
 
 	this.creerRepresentation = function(){
 		representation = new createjs.Shape();
@@ -53,11 +60,19 @@ Joueur = function()
 				representation.x += vitesse;
 				break;
 		}
+
+		this.representationRectangle();
+	}
+
+	this.getPosition = function(){
+		return {x: representation.x, y: representation.y};
 	}
 
 	this.setPosition = function(x, y){
 		representation.x = x;
 		representation.y = y;
+
+		this.representationRectangle();
 	}
 
 	this.changerRole = function(){
@@ -66,6 +81,10 @@ Joueur = function()
 
 	this.afficher = function(){
 		this.scene.addChild(representation);
+	}
+
+	this.getRole = function(){
+		return this.role;
 	}
 
 	this.setRole = function(role){

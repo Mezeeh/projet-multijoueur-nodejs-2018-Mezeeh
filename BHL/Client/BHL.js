@@ -45,6 +45,8 @@
 	var scene;
 	var minuteur;
 
+	var joueursEnCollision = false;
+
 	function initialiser() {
 		window.addEventListener("hashchange", interpreterEvenementsLocation);
 
@@ -59,7 +61,7 @@
 	}
 
 	function initialiserConnexion() {
-		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs);
+		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs, demanderPosition);
 	}
 
 	function initialiserJeu() {
@@ -127,12 +129,27 @@
 		vitesse = evenement.delta / 1000 * 200;
 
 		if(joueur && adversaire){
-			jeuVue.raffraichirHUD({j1Nom: joueur.nom, j2Nom: adversaire.nom, temps: jeu.minuteur});
-			joueur.deplacer(joueur.getEtat(), vitesse);
-			adversaire.deplacer(adversaire.getEtat(), vitesse);
+			if("INACTIF" != joueur.getEtat() && "INACTIF" != adversaire.getEtat()){
+				joueur.deplacer(joueur.getEtat(), vitesse);
+				adversaire.deplacer(adversaire.getEtat(), vitesse);
+
+				if(!joueursEnCollision && joueur.representationRectangle().intersects(adversaire.representationRectangle())){
+					joueursEnCollision = true;
+					
+					connexion.envoyerEnCollision({enCollision: joueursEnCollision, idJoueur: joueur.id});
+				}
+				else if(!joueur.representationRectangle().intersects(adversaire.representationRectangle()))
+					joueursEnCollision = false;
+			}
+
+			jeuVue.raffraichirHUD({j1Nom: joueur.nom, j2Nom: adversaire.nom, j1Pointage: joueur.points, j2Pointage: adversaire.points, temps: jeu.minuteur});
 		}
 
 		scene.update(evenement);
+	}
+
+	function demanderPosition(){
+		connexion.envoyerPosition({representation: joueur.representationRectangle(), id: joueur.id});
 	}
 
 	function demanderJoueur() {

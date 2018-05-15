@@ -65,7 +65,34 @@ function demarrerPartie(connexion){
 	connexion.emit('setMinuteur', JSON.stringify(TEMPS_DE_JEU));
 	demarrerMinuteur(connexion);
 	connexion.on('deplacement', gererDeplacement);
+	connexion.on('collision', gererCollision);
 }
+
+function gererCollision(collision){
+	if(JSON.parse(collision)){
+		this.emit('demandePosition', JSON.stringify(true));
+		this.on('positionJoueur', verifierCollision);
+	}
+}
+
+var positionsJoueur = [];
+function verifierCollision(positionJoueur){
+	//console.log(JSON.parse(positionJoueur));
+	infosPositionsJoueur = JSON.parse(positionJoueur);
+	positionsJoueur[infosPositionsJoueur.id] = infosPositionsJoueur.representation;
+
+	if(nbJoueurs == positionsJoueur.length){
+		if(verifierIntersection(positionsJoueur[0], positionsJoueur[1]))
+			console.log("collision");
+	}
+}
+
+function verifierIntersection(r1, r2) {
+	return !(r2.x > r1.x + r1.widht || 
+			 r2.x + r1.width < r1.x || 
+			 r2.y > r1.y + r1.height ||
+			 r2.y + r2.height < r1.y);
+  }
 
 function demarrerMinuteur(connexion){
 	setTimeout(() => {
