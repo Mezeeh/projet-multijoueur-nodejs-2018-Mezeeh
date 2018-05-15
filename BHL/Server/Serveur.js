@@ -3,6 +3,8 @@ var io = require('socket.io');
 Joueur = require('./modele/Joueur.js');
 Roles = require('./modele/Roles.js');
 
+const TEMPS_DE_JEU = 60;
+
 var nbJoueurs;
 var listeConnexion = [];
 var listeJoueurs = [];
@@ -51,10 +53,25 @@ function gererJoueurs(joueur) {
 
 		for (idConnexion in listeConnexion) {
 			console.log(JSON.stringify(listeJoueurs[idConnexion]));
-			listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs));
-			listeConnexion[idConnexion].on('deplacement', gererDeplacement);
+			/* listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs));
+			listeConnexion[idConnexion].on('deplacement', gererDeplacement); */
+			demarrerPartie(listeConnexion[idConnexion]);
 		}
 	}	
+}
+
+function demarrerPartie(connexion){
+	connexion.emit('commencerPartie', JSON.stringify(listeJoueurs));
+	connexion.emit('setMinuteur', JSON.stringify(TEMPS_DE_JEU));
+	demarrerMinuteur(connexion);
+	connexion.on('deplacement', gererDeplacement);
+}
+
+function demarrerMinuteur(connexion){
+	setTimeout(() => {
+		connexion.emit('partieTerminee', JSON.stringify(true));
+		console.log("FINI");
+	}, TEMPS_DE_JEU * 1000);
 }
 
 function gererDeplacement(etat){

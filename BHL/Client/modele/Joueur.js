@@ -42,7 +42,6 @@ Joueur = function()
 				break;
 			case "HAUT":
 				representation.y -= vitesse;
-				console.log(representation.y);
 				break;
 			case "BAS":
 				representation.y += vitesse;

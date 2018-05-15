@@ -6,7 +6,7 @@
 	<title>Budget Hockey League</title>
 	<style>
 		canvas {
-			cursor: none;
+			/* cursor: none; */
 			padding: 0;
 			display: block;
 			width: 1280px;
@@ -27,7 +27,7 @@
 			/* background-color: blueviolet; */
 		}
 
-		#hudBalles {
+		#hudTemps{
 			font-size: 32px;
 			color: darkred;
 			padding: 0;
@@ -36,8 +36,8 @@
 			width: 100px;
 			height: 32px;
 			position:absolute;
-			bottom: 0;
-			right: 40%;
+			top: 0;
+			right: 50%;
 			z-index: 999;
 		}
 
@@ -195,7 +195,7 @@
 	<script type="text/plain" id="page-jeu">
 		<section id="espace-jeu">
 			<canvas id="canvas" width="1280" height="720"></canvas>
-			<div id="hudBalles">Toto</div>
+			<div id="hudTemps">Toto</div>
 			<div id="hudPointsJ1">Points Joueur 1</div>
 			<div id="hudPointsJ2">Points Joueur 2</div>
 			<div id="hudNomJ1">Nom joueur 1</div>

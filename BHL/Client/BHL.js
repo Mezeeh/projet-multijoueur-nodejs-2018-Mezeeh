@@ -6,6 +6,8 @@
 	var finVue;
 	var vueActive = null;
 
+	var jeu = this;
+
 	var joueur;
 	var infosJoueurs = [];
 
@@ -41,6 +43,7 @@
 
 	var dessin;
 	var scene;
+	var minuteur;
 
 	function initialiser() {
 		window.addEventListener("hashchange", interpreterEvenementsLocation);
@@ -56,7 +59,7 @@
 	}
 
 	function initialiserConnexion() {
-		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, gererEtatJoueurs);
+		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs);
 	}
 
 	function initialiserJeu() {
@@ -94,10 +97,37 @@
 		createjs.Ticker.addEventListener("tick", rafraichirJeu);
 	}
 
+	function detruireJeu(){
+		createjs.Ticker.removeEventListener("tick", rafraichirJeu);
+		document.onkeydown = null;
+		document.onkeyup = null;
+	}
+
+	function setMinuteur(minuteur){
+		jeu.minuteur = JSON.parse(minuteur);
+		demarrerMinuteur(jeu.minuteur);
+	}
+
+	function demarrerMinuteur(minuteur){
+		var interv = setInterval(function(){
+			jeu.minuteur -= 1;
+
+			if(0 == jeu.minuteur)
+				clearInterval(interv);
+		}, 1000);
+	}
+
+	function setPartieTerminee(estTerminee){
+		if(JSON.parse(estTerminee)){
+			window.location = "#gagnant";
+		}
+	}
+
 	function rafraichirJeu(evenement) {
 		vitesse = evenement.delta / 1000 * 200;
 
 		if(joueur && adversaire){
+			jeuVue.raffraichirHUD({j1Nom: joueur.nom, j2Nom: adversaire.nom, temps: jeu.minuteur});
 			joueur.deplacer(joueur.getEtat(), vitesse);
 			adversaire.deplacer(adversaire.getEtat(), vitesse);
 		}
@@ -197,25 +227,34 @@
 		//hash est la partie suivant le # dans l'url
 		var intructionNavigation = window.location.hash;
 		if (!intructionNavigation || intructionNavigation.match(/^#$/) || intructionNavigation.match(/^#accueil$/)) {
+			if(vueActive instanceof JeuVue)
+				detruireJeu();
+
 			accueilVue.afficher();
 			vueActive = accueilVue;
 		}
 		else if (intructionNavigation.match(/^#attente$/)) {
 			console.log("En attente du second joueur...");
 			attenteVue.afficher();
-			initialiserConnexion();
 			vueActive = attenteVue;
+			initialiserConnexion();
 		}
 		else if (intructionNavigation.match(/^#jeu$/)) {
 			jeuVue.afficher();
-			initialiserJeu();
 			vueActive = jeuVue;
+			initialiserJeu();
 		}
 		else if (intructionNavigation.match(/^#gagnant$/)) {
+			if(vueActive instanceof JeuVue)
+				detruireJeu();
+			
 			finVue.afficher("gagne");
 			vueActive = finVue;
 		}
 		else if (intructionNavigation.match(/^#perdant$/)) {
+			if(vueActive instanceof JeuVue)
+				detruireJeu();
+			
 			finVue.afficher("perdu");
 			vueActive = finVue;
 		}
