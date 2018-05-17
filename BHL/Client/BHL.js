@@ -61,7 +61,14 @@
 	}
 
 	function initialiserConnexion() {
-		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs, demanderPosition, changerRole);
+		connexion = new ConnexionNodeJS(demanderJoueur, 
+										commencerPartie, 
+										setMinuteur, 
+										setPartieTerminee, 
+										gererEtatJoueurs, 
+										demanderPosition, 
+										changerRole,
+										setProlongation);
 	}
 
 	function initialiserJeu() {
@@ -125,18 +132,24 @@
 		demarrerMinuteur(jeu.minuteur);
 	}
 
+	function setProlongation(prolongation){
+		jeu.minuteur = JSON.parse(prolongation);
+		demarrerMinuteur(jeu.minuteur);
+	}
+	
 	function demarrerMinuteur(minuteur){
 		var interv = setInterval(function(){
 			jeu.minuteur -= 1;
-
-			if(0 == jeu.minuteur)
+			
+			if(0 >= jeu.minuteur)
 				clearInterval(interv);
 		}, 1000);
 	}
 
 	function setPartieTerminee(estTerminee){
-		if(JSON.parse(estTerminee)){
-			window.location = "#gagnant";
+		etatPartie = JSON.parse(estTerminee);
+		if(etatPartie.partieTerminee){
+			window.location = etatPartie.gagnant.id == joueur.id ? "#gagnant" : "#perdant";
 		}
 	}
 

@@ -3,7 +3,8 @@ var io = require('socket.io');
 Joueur = require('./modele/Joueur.js');
 Roles = require('./modele/Roles.js');
 
-const TEMPS_DE_JEU = 60;
+const TEMPS_DE_JEU = 10;
+const TEMPS_DE_PROLONGATION = 10;
 
 serveur = this;
 
@@ -83,13 +84,13 @@ function gererCollision(collision) {
 			this.on('positionJoueur', verifierCollision);
 			serveur.nbReponseCollisionInitiale++;
 
-			if(serveur.nbReponseCollisionInitiale == nbJoueurs){
+			if (serveur.nbReponseCollisionInitiale == nbJoueurs) {
 				serveur.vientDeDemarrerPartie = false;
 				console.log("LUL");
 			}
 		} else {
 			console.log("FK ME SIDEWAYS");
-			for(idConnexion in listeConnexion){
+			for (idConnexion in listeConnexion) {
 				listeConnexion[idConnexion].emit('demandePosition', JSON.stringify(true));
 				listeConnexion[idConnexion].on('positionJoueur', verifierCollision);
 			}
@@ -136,15 +137,37 @@ function demarrerMinuteur(connexion) {
 	}, TEMPS_DE_JEU * 1000);
 }
 
-function gererFinDePartie(connexion){
-	gagnant = listeJoueurs[0];
-	for(joueur in listeJoueurs){
-		if(listeJoueurs[joueur].points > gagnant.points)
+function gererFinDePartie(connexion) {
+	gagnant = null;
+	pointsGagnant = 0;
+	egalite = false;
+
+	for (joueur in listeJoueurs) {
+		if (listeJoueurs[joueur].points == pointsGagnant) {
+			//egalite = true;
+			gagnant = null;
+		} else if (listeJoueurs[joueur].points > pointsGagnant) {
 			gagnant = listeJoueurs[joueur];
+			pointsGagnant = listeJoueurs[joueur].points;
+			//egalite = false;
+		}
 	}
 
-	connexion.emit('partieTerminee', JSON.stringify(true));
-	console.log("FINI");
+	if (/* !egalite &&  */null != gagnant) {
+		console.log("FINI");
+		connexion.emit('partieTerminee', JSON.stringify({ partieTerminee: true, gagnant: gagnant }));
+	} else {
+		console.log("PROLONGATION");
+		prolongation(connexion);
+	}
+}
+
+function prolongation(connexion) {
+	connexion.emit('prolongation', JSON.stringify(TEMPS_DE_PROLONGATION));
+	setTimeout(() => {
+		gererFinDePartie(connexion);
+		console.log("allo");
+	}, TEMPS_DE_PROLONGATION * 1000);
 }
 
 function gererDeplacement(etat) {

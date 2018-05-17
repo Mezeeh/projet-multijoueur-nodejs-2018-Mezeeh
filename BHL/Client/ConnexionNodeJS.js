@@ -4,7 +4,8 @@ function ConnexionNodeJS(demanderJoueur,
 						setPartieTerminee,
 						gererEtatJoueurs,
 						demanderPosition,
-						changerRole){
+						changerRole,
+						setProlongation){
     var connexion;
 
     function init(){
@@ -18,6 +19,7 @@ function ConnexionNodeJS(demanderJoueur,
 		connexion.on('etatJoueurs', gererEtatJoueurs);
 		connexion.on('demandePosition', demanderPosition);
 		connexion.on('changementRole', changerRole)
+		connexion.on('prolongation', setProlongation);
 	}
 	
 	function identifierJoueur(idJoueur){
