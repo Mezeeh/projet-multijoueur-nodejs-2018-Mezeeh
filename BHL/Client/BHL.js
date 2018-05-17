@@ -61,7 +61,7 @@
 	}
 
 	function initialiserConnexion() {
-		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs, demanderPosition);
+		connexion = new ConnexionNodeJS(demanderJoueur, commencerPartie, setMinuteur, setPartieTerminee, gererEtatJoueurs, demanderPosition, changerRole);
 	}
 
 	function initialiserJeu() {
@@ -105,6 +105,21 @@
 		document.onkeyup = null;
 	}
 
+	function changerRole(listeJoueurs){
+		joueurs = JSON.parse(listeJoueurs);
+
+		for(j in joueurs){
+			if(joueurs[j].id == joueur.id){
+				joueur.changerRole(joueurs[j].role, joueurs[j].positionX, joueurs[j].positionY);
+				joueur.points = joueurs[j].points; // TODO : retirer
+			}
+			else if(adversaire.id == joueurs[j].id){
+				adversaire.changerRole(joueurs[j].role, joueurs[j].positionX, joueurs[j].positionY);
+				adversaire.points = joueurs[j].points; // TODO : retirer
+			}
+		}
+	}
+
 	function setMinuteur(minuteur){
 		jeu.minuteur = JSON.parse(minuteur);
 		demarrerMinuteur(jeu.minuteur);
@@ -135,7 +150,7 @@
 
 				if(!joueursEnCollision && joueur.representationRectangle().intersects(adversaire.representationRectangle())){
 					joueursEnCollision = true;
-					
+					console.log("Collision selon moi (" + joueur.nom + ")");
 					connexion.envoyerEnCollision({enCollision: joueursEnCollision, idJoueur: joueur.id});
 				}
 				else if(!joueur.representationRectangle().intersects(adversaire.representationRectangle()))
@@ -167,14 +182,15 @@
 		var listeEtatJoueurs = JSON.parse(etatJoueurs);
 
 		for (j in listeEtatJoueurs) {
-			if (joueur.id == listeEtatJoueurs[j].id)
+			if (joueur.id == listeEtatJoueurs[j].id){
 				joueur.setEtat(listeEtatJoueurs[j].etat);
-			else
+				console.log("j " + joueur.getEtat());
+			}else{
 				adversaire.setEtat(listeEtatJoueurs[j].etat);
+				console.log("adv " + adversaire.getEtat());
+			}
 		}
 
-		console.log("adv " + adversaire.getEtat());
-		console.log("j " + joueur.getEtat());
 	}
 
 	function gererToucheAppuyer(evenement) {

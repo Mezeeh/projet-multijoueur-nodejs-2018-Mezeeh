@@ -3,7 +3,7 @@ Joueur = function(nom, id)
 	this.nom = nom;
 	this.id = id;
 	
-	var points = 0;
+	this.points = 0;
 	var role;
 
 	var positionDepart = {

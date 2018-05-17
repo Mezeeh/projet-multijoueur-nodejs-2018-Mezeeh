@@ -10,15 +10,17 @@ Joueur = function()
 	var representation;
 	var etat = "INACTIF";
 
+	var joueur = this;
+
 	this.representationRectangle = function () {
-		representation.setBounds(representation.x, representation.y, 30, 30); // sert a creer une hitbox
+		joueur.representation.setBounds(joueur.representation.x, joueur.representation.y, 30, 30); // sert a creer une hitbox
         
-        return representation.getBounds();
+        return joueur.representation.getBounds();
 	}
 
 	this.creerRepresentation = function(){
-		representation = new createjs.Shape();
-		representation.graphics.beginFill("Defenseur" == this.role ? "blue" : "red").drawRect(0, 0, 30, 30);
+		joueur.representation = new createjs.Shape();
+		joueur.representation.graphics.beginFill("Defenseur" == this.role ? "blue" : "red").drawRect(0, 0, 30, 30);
 	}
 
 	this.getEtat = function(){
@@ -32,32 +34,32 @@ Joueur = function()
 	this.deplacer = function(etat, vitesse){
 		switch (etat) {
 			case "HAUT_GAUCHE":
-				representation.x -= vitesse;
-				representation.y -= vitesse;
+			joueur.representation.x -= vitesse;
+			joueur.representation.y -= vitesse;
 				break;
 			case "HAUT_DROITE":
-				representation.x += vitesse;
-				representation.y -= vitesse;
+			joueur.representation.x += vitesse;
+				joueur.representation.y -= vitesse;
 				break;
 			case "BAS_GAUCHE":
-				representation.x -= vitesse;
-				representation.y += vitesse;
+			joueur.representation.x -= vitesse;
+				joueur.representation.y += vitesse;
 				break;
 			case "BAS_DROITE":
-				representation.x += vitesse;
-				representation.y += vitesse;
+			joueur.representation.x += vitesse;
+				joueur.representation.y += vitesse;
 				break;
 			case "HAUT":
-				representation.y -= vitesse;
+			joueur.representation.y -= vitesse;
 				break;
 			case "BAS":
-				representation.y += vitesse;
+			joueur.representation.y += vitesse;
 				break;
 			case "GAUCHE":
-				representation.x -= vitesse;
+			joueur.representation.x -= vitesse;
 				break;
 			case "DROITE":
-				representation.x += vitesse;
+			joueur.representation.x += vitesse;
 				break;
 		}
 
@@ -65,22 +67,30 @@ Joueur = function()
 	}
 
 	this.getPosition = function(){
-		return {x: representation.x, y: representation.y};
+		return {x: joueur.representation.x, y: joueur.representation.y};
 	}
 
 	this.setPosition = function(x, y){
-		representation.x = x;
-		representation.y = y;
+		joueur.representation.x = x;
+		joueur.representation.y = y;
 
 		this.representationRectangle();
 	}
 
-	this.changerRole = function(){
-		this.role = "Defenseur" == this.role ? "Attaquant" : "Defenseur";
+	this.changerRole = function(role, positionX, positionY){
+		console.log(joueur.nom + " etait " + joueur.role);
+		joueur.role = role;
+		console.log(joueur.nom + " est maintenant " + joueur.role);
+		joueur.scene.removeChild(joueur.representation);
+		joueur.creerRepresentation();
+		joueur.afficher();
+		//joueur.representation.graphics.beginFill("Defenseur" == joueur.role ? "blue" : "red");
+		joueur.representation.x = positionX;
+		joueur.representation.y = positionY;
 	}
 
 	this.afficher = function(){
-		this.scene.addChild(representation);
+		this.scene.addChild(joueur.representation);
 	}
 
 	this.getRole = function(){

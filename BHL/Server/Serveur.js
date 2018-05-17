@@ -5,6 +5,8 @@ Roles = require('./modele/Roles.js');
 
 const TEMPS_DE_JEU = 60;
 
+serveur = this;
+
 var nbJoueurs;
 var listeConnexion = [];
 var listeJoueurs = [];
@@ -16,7 +18,7 @@ function init() {
 
 	joueursRecus = 0;
 
-	var serveur = http.createServer(function (requete, reponse) {}).listen(8080);
+	var serveur = http.createServer(function (requete, reponse) { }).listen(8080);
 
 	var priseEntreeSortie = io.listen(serveur);
 	priseEntreeSortie.on('connection', gererConnexion);
@@ -53,14 +55,12 @@ function gererJoueurs(joueur) {
 
 		for (idConnexion in listeConnexion) {
 			console.log(JSON.stringify(listeJoueurs[idConnexion]));
-			/* listeConnexion[idConnexion].emit('commencerPartie', JSON.stringify(listeJoueurs));
-			listeConnexion[idConnexion].on('deplacement', gererDeplacement); */
 			demarrerPartie(listeConnexion[idConnexion]);
 		}
-	}	
+	}
 }
 
-function demarrerPartie(connexion){
+function demarrerPartie(connexion) {
 	connexion.emit('commencerPartie', JSON.stringify(listeJoueurs));
 	connexion.emit('setMinuteur', JSON.stringify(TEMPS_DE_JEU));
 	demarrerMinuteur(connexion);
@@ -68,40 +68,86 @@ function demarrerPartie(connexion){
 	connexion.on('collision', gererCollision);
 }
 
-function gererCollision(collision){
-	if(JSON.parse(collision)){
-		this.emit('demandePosition', JSON.stringify(true));
-		this.on('positionJoueur', verifierCollision);
+serveur.vientDeDemarrerPartie = true;
+serveur.nbReponseCollisionInitiale = 0;
+function gererCollision(collision) {
+	if (JSON.parse(collision)) {
+		if (serveur.nbReponsePositionsJoueur >= nbJoueurs) {
+			serveur.positionsJoueur = [];
+			serveur.nbReponsePositionsJoueur = 0;
+		}
+
+		if (serveur.vientDeDemarrerPartie) {
+			console.log("FK ME");
+			this.emit('demandePosition', JSON.stringify(true));
+			this.on('positionJoueur', verifierCollision);
+			serveur.nbReponseCollisionInitiale++;
+
+			if(serveur.nbReponseCollisionInitiale == nbJoueurs){
+				serveur.vientDeDemarrerPartie = false;
+				console.log("LUL");
+			}
+		} else {
+			console.log("FK ME SIDEWAYS");
+			for(idConnexion in listeConnexion){
+				listeConnexion[idConnexion].emit('demandePosition', JSON.stringify(true));
+				listeConnexion[idConnexion].on('positionJoueur', verifierCollision);
+			}
+		}
 	}
 }
 
-var positionsJoueur = [];
-function verifierCollision(positionJoueur){
-	//console.log(JSON.parse(positionJoueur));
+serveur.positionsJoueur = [];
+serveur.nbReponsePositionsJoueur = 0;
+function verifierCollision(positionJoueur) {
+	console.log(this.id + " " + positionJoueur);
 	infosPositionsJoueur = JSON.parse(positionJoueur);
-	positionsJoueur[infosPositionsJoueur.id] = infosPositionsJoueur.representation;
+	serveur.positionsJoueur[infosPositionsJoueur.id] = infosPositionsJoueur.representation;
+	serveur.nbReponsePositionsJoueur++;
+	if (nbJoueurs == serveur.nbReponsePositionsJoueur) {
+		console.log("Collision???");
+		if (verifierIntersection(serveur.positionsJoueur[0], serveur.positionsJoueur[1])) {
+			console.log("Collision!!!");
+			for (joueur in listeJoueurs) {
+				if (Roles.ATTAQUANT == listeJoueurs[joueur].getRole())
+					listeJoueurs[joueur].points++;
 
-	if(nbJoueurs == positionsJoueur.length){
-		if(verifierIntersection(positionsJoueur[0], positionsJoueur[1]))
-			console.log("collision");
+				changerRoleJoueur(listeJoueurs[joueur]);
+			}
+
+			for (idConnexion in listeConnexion) {
+				console.log(listeJoueurs[idConnexion].points);
+				listeConnexion[idConnexion].emit('changementRole', JSON.stringify(listeJoueurs));
+			}
+		}
 	}
 }
 
 function verifierIntersection(r1, r2) {
-	return !(r2.x > r1.x + r1.widht || 
-			 r2.x + r1.width < r1.x || 
-			 r2.y > r1.y + r1.height ||
-			 r2.y + r2.height < r1.y);
-  }
+	return !(r2.x > r1.x + r1.widht ||
+		r2.x + r1.width < r1.x ||
+		r2.y > r1.y + r1.height ||
+		r2.y + r2.height < r1.y);
+}
 
-function demarrerMinuteur(connexion){
+function demarrerMinuteur(connexion) {
 	setTimeout(() => {
-		connexion.emit('partieTerminee', JSON.stringify(true));
-		console.log("FINI");
+		gererFinDePartie(connexion);
 	}, TEMPS_DE_JEU * 1000);
 }
 
-function gererDeplacement(etat){
+function gererFinDePartie(connexion){
+	gagnant = listeJoueurs[0];
+	for(joueur in listeJoueurs){
+		if(listeJoueurs[joueur].points > gagnant.points)
+			gagnant = listeJoueurs[joueur];
+	}
+
+	connexion.emit('partieTerminee', JSON.stringify(true));
+	console.log("FINI");
+}
+
+function gererDeplacement(etat) {
 	var direction = JSON.parse(etat);
 	console.log(direction.etat + " " + direction.id);
 	listeJoueurs[direction.id].setEtat(direction.etat);
@@ -120,6 +166,12 @@ function choisirRoleJoueur(idJoueur) {
 
 	listeJoueurs[idJoueur].positionX = listeJoueurs[idJoueur].getRole() == Roles.ATTAQUANT ? (1280 / 2) : (1280 / 40);
 	listeJoueurs[idJoueur].positionY = (720 / 2);
+}
+
+function changerRoleJoueur(joueur) {
+	joueur.setRole(Roles.ATTAQUANT == joueur.getRole() ? Roles.DEFENSEUR : Roles.ATTAQUANT);
+	joueur.positionX = joueur.getRole() == Roles.ATTAQUANT ? (1280 / 2) : (1280 / 40);
+	joueur.positionY = (720 / 2);
 }
 
 init();

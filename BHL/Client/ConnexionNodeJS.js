@@ -3,7 +3,8 @@ function ConnexionNodeJS(demanderJoueur,
 						setMinuteur,
 						setPartieTerminee,
 						gererEtatJoueurs,
-						demanderPosition){
+						demanderPosition,
+						changerRole){
     var connexion;
 
     function init(){
@@ -16,6 +17,7 @@ function ConnexionNodeJS(demanderJoueur,
 		connexion.on('partieTerminee', setPartieTerminee);
 		connexion.on('etatJoueurs', gererEtatJoueurs);
 		connexion.on('demandePosition', demanderPosition);
+		connexion.on('changementRole', changerRole)
 	}
 	
 	function identifierJoueur(idJoueur){
@@ -37,6 +39,7 @@ function ConnexionNodeJS(demanderJoueur,
 	}
 
 	this.envoyerPosition = function(position){
+		console.log("envoyerPosition()");
 		connexion.emit('positionJoueur', JSON.stringify(position));
 	}
 
