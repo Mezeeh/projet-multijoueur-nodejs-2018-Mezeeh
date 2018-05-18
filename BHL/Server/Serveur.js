@@ -79,17 +79,17 @@ function gererCollision(collision) {
 		}
 
 		if (serveur.vientDeDemarrerPartie) {
-			console.log("FK ME");
+			console.log("Premiere collision");
 			this.emit('demandePosition', JSON.stringify(true));
 			this.on('positionJoueur', verifierCollision);
 			serveur.nbReponseCollisionInitiale++;
 
 			if (serveur.nbReponseCollisionInitiale == nbJoueurs) {
 				serveur.vientDeDemarrerPartie = false;
-				console.log("LUL");
+				console.log("toto");
 			}
 		} else {
-			console.log("FK ME SIDEWAYS");
+			console.log("Seconde collision");
 			for (idConnexion in listeConnexion) {
 				listeConnexion[idConnexion].emit('demandePosition', JSON.stringify(true));
 				listeConnexion[idConnexion].on('positionJoueur', verifierCollision);
@@ -140,20 +140,17 @@ function demarrerMinuteur(connexion) {
 function gererFinDePartie(connexion) {
 	gagnant = null;
 	pointsGagnant = 0;
-	egalite = false;
 
 	for (joueur in listeJoueurs) {
 		if (listeJoueurs[joueur].points == pointsGagnant) {
-			//egalite = true;
 			gagnant = null;
 		} else if (listeJoueurs[joueur].points > pointsGagnant) {
 			gagnant = listeJoueurs[joueur];
 			pointsGagnant = listeJoueurs[joueur].points;
-			//egalite = false;
 		}
 	}
 
-	if (/* !egalite &&  */null != gagnant) {
+	if (null != gagnant) {
 		console.log("FINI");
 		connexion.emit('partieTerminee', JSON.stringify({ partieTerminee: true, gagnant: gagnant }));
 	} else {
