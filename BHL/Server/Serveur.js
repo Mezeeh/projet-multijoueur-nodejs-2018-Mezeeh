@@ -38,6 +38,9 @@ function gererConnexion(connexion) {
 		for (idConnexion in listeConnexion) {
 			listeConnexion[idConnexion].emit('demandeJoueurs', true);
 			listeConnexion[idConnexion].on('joueurs', gererJoueurs);
+
+			// TEST ICI PAS FINAL
+			listeConnexion[idConnexion].on('positionJoueur', verifierCollision);
 		}
 	}
 }
@@ -77,24 +80,7 @@ function gererCollision(collision) {
 			serveur.positionsJoueur = [];
 			serveur.nbReponsePositionsJoueur = 0;
 		}
-
-		if (serveur.vientDeDemarrerPartie) {
-			console.log("Premiere collision");
-			this.emit('demandePosition', JSON.stringify(true));
-			this.on('positionJoueur', verifierCollision);
-			serveur.nbReponseCollisionInitiale++;
-
-			if (serveur.nbReponseCollisionInitiale == nbJoueurs) {
-				serveur.vientDeDemarrerPartie = false;
-				console.log("toto");
-			}
-		} else {
-			console.log("Seconde collision");
-			for (idConnexion in listeConnexion) {
-				listeConnexion[idConnexion].emit('demandePosition', JSON.stringify(true));
-				listeConnexion[idConnexion].on('positionJoueur', verifierCollision);
-			}
-		}
+		this.emit('demandePosition', JSON.stringify(true));
 	}
 }
 
@@ -105,6 +91,7 @@ function verifierCollision(positionJoueur) {
 	infosPositionsJoueur = JSON.parse(positionJoueur);
 	serveur.positionsJoueur[infosPositionsJoueur.id] = infosPositionsJoueur.representation;
 	serveur.nbReponsePositionsJoueur++;
+	console.log(serveur.nbReponsePositionsJoueur);
 	if (nbJoueurs == serveur.nbReponsePositionsJoueur) {
 		console.log("Collision???");
 		if (verifierIntersection(serveur.positionsJoueur[0], serveur.positionsJoueur[1])) {
@@ -163,7 +150,6 @@ function prolongation(connexion) {
 	connexion.emit('prolongation', JSON.stringify(TEMPS_DE_PROLONGATION));
 	setTimeout(() => {
 		gererFinDePartie(connexion);
-		console.log("allo");
 	}, TEMPS_DE_PROLONGATION * 1000);
 }
 
