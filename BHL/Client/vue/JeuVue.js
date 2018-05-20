@@ -13,6 +13,8 @@ JeuVue = function(joueur)
         
 	}
 
+	// sert a afficher les bonnes infos dans la vue du jeu sous une forme de hud
+	// est appele dans le main a chaque tick du createjs
 	this.raffraichirHUD = function(variable){
             document.getElementById("hudNomJ1").innerHTML = variable.j1Nom;
             document.getElementById("hudNomJ2").innerHTML = variable.j2Nom;

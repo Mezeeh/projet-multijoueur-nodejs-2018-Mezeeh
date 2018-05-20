@@ -60,6 +60,7 @@
 		accueilVue.afficher();
 	}
 
+	// cre une connexion et lui donne ses callbacks
 	function initialiserConnexion() {
 		connexion = new ConnexionNodeJS(demanderJoueur,
 			commencerPartie,
@@ -70,16 +71,18 @@
 			changerRole,
 			setProlongation);
 	}
-
+	// initialise tout ce qui concerne le jeu et son affichage
 	function initialiserJeu() {
 		console.log("initialiserJeu()");
 		dessin = document.getElementById("canvas");
 		scene = new createjs.Stage(dessin);
 		joueur.setScene(scene);
 
+		// pour savoir la direction du joueur
 		document.onkeydown = gererToucheAppuyer;
 		document.onkeyup = gererToucheRelacher;
 
+		// cre un joueur et un adversaire et lui donne les infos quil a besoin pour safficher correctement a lecran
 		for (info in infosJoueurs) {
 			if (infosJoueurs[info].id == joueur.id) {
 				console.log("joueur : " + infosJoueurs[info].nom + " " + infosJoueurs[info].role + " " + infosJoueurs[info].positionX + " " + infosJoueurs[info].positionY);
@@ -106,12 +109,14 @@
 		createjs.Ticker.addEventListener("tick", rafraichirJeu);
 	}
 
+	// utile pour les ecrans de fin de partie pour que le tick et les touches ne creent pas dactions non desirer
 	function detruireJeu() {
 		createjs.Ticker.removeEventListener("tick", rafraichirJeu);
 		document.onkeydown = null;
 		document.onkeyup = null;
 	}
 
+	// fait juste dire au joueur de changer de role en lui donnant ce quil a besoin pour le faire
 	function changerRole(listeJoueurs) {
 		joueurs = JSON.parse(listeJoueurs);
 
@@ -127,18 +132,21 @@
 		}
 	}
 
+	// sert seulement a donner un temps a la partie qui sera afficher sur le hud
 	function setMinuteur(minuteur) {
 		jeu.minuteur = JSON.parse(minuteur);
 		demarrerMinuteur(jeu.minuteur);
 	}
 
+	// semblable a setMiniteur() mais pour si la partie necessite une prolongation
 	function setProlongation(prolongation) {
 		jeu.minuteur = JSON.parse(prolongation);
-		clearInterval(interv);
+		clearInterval(interv); // clear pour sassurer que linterval nes pas toujours en cours et ne pas creer des donnes erronnees et des bugs daffichage
 		demarrerMinuteur(jeu.minuteur);
 	}
 
 	var interv;
+	// descend la temps de 1s a toute les 1s
 	function demarrerMinuteur(minuteur) {
 		interv = setInterval(function () {
 			jeu.minuteur -= 1;
@@ -150,6 +158,7 @@
 		}, 1000);
 	}
 
+	// change la page quand la partie est terminee selon que le joueur est gagne ou non
 	function setPartieTerminee(estTerminee) {
 		etatPartie = JSON.parse(estTerminee);
 		if (etatPartie.partieTerminee) {
@@ -157,6 +166,7 @@
 		}
 	}
 
+	// se fait a chaque tick de createjs
 	function rafraichirJeu(evenement) {
 		vitesse = evenement.delta / 1000 * 200;
 
@@ -165,6 +175,9 @@
 				joueur.deplacer(joueur.getEtat(), vitesse);
 				adversaire.deplacer(adversaire.getEtat(), vitesse);
 
+				// si les joueurs rentrent en collision il lenvoie au sereur avec son id
+				// le joueursEnCollision sert que levent enCollision ne soit pas appeler tant que les joueurs se touchent mais seulement la premiere fois quil se touche
+				// joueursEnCollision est renitialiser quand les joueurs ne se touchent plus
 				if (!joueursEnCollision && joueur.representationRectangle().intersects(adversaire.representationRectangle())) {
 					joueursEnCollision = true;
 					console.log("Collision selon moi (" + joueur.nom + ")");
@@ -180,14 +193,17 @@
 		scene.update(evenement);
 	}
 
+	// callback utiliser dans ConnexionNodeJS pour avour la representation du joueur et son id
 	function demanderPosition() {
 		connexion.envoyerPosition({ representation: joueur.representationRectangle(), id: joueur.id });
 	}
 
+	// callback qui renvoit lobjet joueur en entier
 	function demanderJoueur() {
 		return joueur;
 	}
 
+	// affiche la page de jeu
 	function commencerPartie(evenement) {
 		console.log("La partie va commencer");
 		infosJoueurs = JSON.parse(evenement);
@@ -195,6 +211,7 @@
 		window.location = "#jeu";
 	}
 
+	// callback qui set letat du joueur pour que les deplacements a lecran se fassent correctement
 	function gererEtatJoueurs(etatJoueurs) {
 		var listeEtatJoueurs = JSON.parse(etatJoueurs);
 
@@ -210,6 +227,7 @@
 
 	}
 
+	// set letat selon les touches appuyes et envoie ensuite au serveur letat avec lid du joueur pour les differentier
 	function gererToucheAppuyer(evenement) {
 		var etat;
 
@@ -233,6 +251,7 @@
 			else if (directionDeplacement[touchesDeplacement.droite])
 				etat = etatDirectionDeplacement.droite;
 
+			// pour que levent ne soit pas envoyer si la touche est maintenu
 			if (dernierEtat != etat) {
 				console.log(etat);
 				connexion.envoyerDeplacement({ "etat": etat, "id": joueur.id });
@@ -241,6 +260,7 @@
 		}
 	}
 
+	// meme chose que gererToucheAppuyer mais si rien nest appuyer letat est inactif
 	function gererToucheRelacher(evenement) {
 		var etat;
 
@@ -273,10 +293,12 @@
 		}
 	}
 
+	// affiche la page selon le changement du hash
 	function interpreterEvenementsLocation(evenement) {
 		//hash est la partie suivant le # dans l'url
 		var intructionNavigation = window.location.hash;
 		if (!intructionNavigation || intructionNavigation.match(/^#$/) || intructionNavigation.match(/^#accueil$/)) {
+			// si la vue active est celle du jeu il detruir le jeu avant de changer la page afficher pour ne pas creer derreurs
 			if (vueActive instanceof JeuVue)
 				detruireJeu();
 

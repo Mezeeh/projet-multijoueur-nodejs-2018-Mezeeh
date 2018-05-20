@@ -8,16 +8,19 @@ Joueur = function()
 
 	var scene;
 	var representation;
-	var etat = "INACTIF";
+	var etat = "INACTIF"; // inactif plutot que "" pour ne pas creer une erreur et des deplacements non representatif au debut
 
 	var joueur = this;
 
+	// donne une genre de hitbox a la forme qui represente le joueur
+	// utile pour verifier les collision du cote client mais serveur aussi
 	this.representationRectangle = function () {
 		joueur.representation.setBounds(joueur.representation.x, joueur.representation.y, 30, 30); // sert a creer une hitbox
         
         return joueur.representation.getBounds();
 	}
 
+	// cree la forme et lui donne une couleur selon le role quil a bleu pour defenseur et rouge pour attaquant
 	this.creerRepresentation = function(){
 		joueur.representation = new createjs.Shape();
 		joueur.representation.graphics.beginFill("Defenseur" == this.role ? "blue" : "red").drawRect(0, 0, 30, 30);
@@ -31,6 +34,8 @@ Joueur = function()
 		this.etat = etat;
 	}
 
+	// bouge sur le canvas selon letat quil recoit
+	// la vitesse est base sur le temps pour sassurer que les fps ninfluence pas trop la sync des joueurs
 	this.deplacer = function(etat, vitesse){
 		switch (etat) {
 			case "HAUT_GAUCHE":
@@ -77,6 +82,7 @@ Joueur = function()
 		this.representationRectangle();
 	}
 
+	// change le role et donne la position relative au role quil recoit par le serveur
 	this.changerRole = function(role, positionX, positionY){
 		console.log(joueur.nom + " etait " + joueur.role);
 		joueur.role = role;
@@ -89,6 +95,7 @@ Joueur = function()
 		joueur.representation.y = positionY;
 	}
 
+	// fait juste lafficher sur le stage createjs
 	this.afficher = function(){
 		this.scene.addChild(joueur.representation);
 	}

@@ -1,5 +1,6 @@
 Joueur = function(nom, id)
 {
+	// recoit seulement le nom et lid de base parce que le reste est decide apres la creation de lobjet
 	this.nom = nom;
 	this.id = id;
 	
